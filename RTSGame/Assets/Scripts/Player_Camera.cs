@@ -16,6 +16,10 @@ public class Player_Camera : MonoBehaviour
     public Ray mouseRay;
     // Holds were the player has clicked on the map.
     public RaycastHit objectHit;
+    // Holds the value of the zoom.
+    public float zoomValue = 80f;
+    //
+    public float zoomChange = 100f;
 
     // Start is called before the first frame update
     void Start()
@@ -40,6 +44,37 @@ public class Player_Camera : MonoBehaviour
             // Calls right click function that deals with unit movement.
             RightMouseClick();
         }
+
+        if (Input.GetAxis("Mouse ScrollWheel") > 0)
+        {
+            ZoomIn();
+        }
+
+        if (Input.GetAxis("Mouse ScrollWheel") < 0)
+        {
+            ZoomOut();
+        }
+
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            UpArrowClick();
+        }
+
+        if (Input.GetKey(KeyCode.DownArrow))
+        {
+            DownArrowClick();
+        }
+
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            LeftArrowClick();
+        }
+
+        if (Input.GetKey(KeyCode.RightArrow))
+        {
+            RightArrowClick();
+        }
+
     }
 
     // Checks to see if any player unit has been hit by the player left click.
@@ -94,5 +129,40 @@ public class Player_Camera : MonoBehaviour
             Debug.Log("Right Did not Hit");
         }
 
+    }
+
+    public void ZoomIn()
+    {
+        mainCamera.GetComponent<Camera>().fieldOfView--;
+    }
+
+    public void ZoomOut()
+    {
+        mainCamera.GetComponent<Camera>().fieldOfView++;
+    }
+
+    public void UpArrowClick()
+    {
+        Debug.Log("Up Click");
+        //mainCamera.transform.position.x = 2f;
+        mainCamera.transform.Translate(Vector3.up * 10 * Time.deltaTime);
+    }
+
+    public void DownArrowClick()
+    {
+        Debug.Log("Down Click");
+        mainCamera.transform.Translate(Vector3.down * 10 * Time.deltaTime);
+    }
+
+    public void LeftArrowClick()
+    {
+        Debug.Log("Left Click");
+        mainCamera.transform.Translate(Vector3.left * 10 * Time.deltaTime);
+    }
+
+    public void RightArrowClick()
+    {
+        Debug.Log("Right Click");
+        mainCamera.transform.Translate(Vector3.right * 10 * Time.deltaTime);
     }
 }
