@@ -568,7 +568,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a632202b65c7e734aa2c1c7cd45f792f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  leftLayerMask: 512
+  RightLayerMask: 1024
+  EnemyLayerMask: 2048
   mainCamera: {fileID: 534669904}
+  zoomValue: 80
+  zoomChange: 100
 --- !u!1 &993134829
 GameObject:
   m_ObjectHideFlags: 0
@@ -696,6 +701,7 @@ MonoBehaviour:
   unitHealth: 0
   unitDamage: 0
   unitTarget: {fileID: 0}
+  EnemyLayerMask: 11
 --- !u!136 &1345514688
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -866,6 +872,7 @@ MonoBehaviour:
   unitHealth: 0
   unitDamage: 0
   unitTarget: {fileID: 0}
+  EnemyLayerMask: 11
 --- !u!136 &1864141480
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -970,9 +977,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playersObjects:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 6278619742878535075}
+  - {fileID: 1864141475}
+  - {fileID: 1345514683}
   movingObjects:
   - {fileID: 0}
   - {fileID: 0}
@@ -1268,6 +1275,7 @@ MonoBehaviour:
   unitHealth: 0
   unitDamage: 0
   unitTarget: {fileID: 0}
+  EnemyLayerMask: 11
 --- !u!54 &6278619742878535083
 Rigidbody:
   m_ObjectHideFlags: 0

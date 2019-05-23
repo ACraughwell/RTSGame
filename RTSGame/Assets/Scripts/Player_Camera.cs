@@ -7,9 +7,11 @@ public class Player_Camera : MonoBehaviour
     // Connects to the Click_Movement script so the movement functions can be called form this script.
     private Player_Click playerClick;
     // Layer mask set to only count the player's units that are assigned to layer 9.
-    private int leftLayerMask = 1 << 9;
+    public int leftLayerMask = 1 << 9;
     // Layer mask set to only count the locations units can move to that are assigned to layer 10.
-    private int RightLayerMask = 1 << 10;
+    public int RightLayerMask = 1 << 10;
+    // 
+    public int EnemyLayerMask = 1 << 11;
     // The main camera that acst as the player's eyes.
     public Camera mainCamera;
     // Ray that fires from the camera to the map when they click.
@@ -109,18 +111,26 @@ public class Player_Camera : MonoBehaviour
         mouseRay = mainCamera.ScreenPointToRay(Input.mousePosition);
 
         // Additonal if statment needed here to check is the object hit was enemy. 
-
-        // Checks to see if ray intersected with any objects on the movable location layer.
-        if (Physics.Raycast(mouseRay, out objectHit, Mathf.Infinity, RightLayerMask))
+        if (Physics.Raycast(mouseRay, out objectHit, Mathf.Infinity, EnemyLayerMask))
         {
-            // Draws a red line from the camera to the clicked location when a movable location is hit.
+            // Draws a red line from the camera to the clicked enemy when an enemy is hit.
             Debug.DrawRay(mouseRay.origin, mouseRay.direction * objectHit.distance, Color.red);
-            Debug.Log("Right Did Hit");
+            Debug.Log("Right Did Hit an Enemy");
+            // Assigns the clicked location so the Click_Movement script can access the location.
+            playerClick.chosenEnemy = objectHit.collider.gameObject; 
+            // Calls the unit movement to enemy function.
+            playerClick.MoveToEnemy();
+        }
+        // Checks to see if ray intersected with any objects on the movable location layer.
+        else if (Physics.Raycast(mouseRay, out objectHit, Mathf.Infinity, RightLayerMask))
+        {
+            // Draws a blue line from the camera to the clicked location when a movable location is hit.
+            Debug.DrawRay(mouseRay.origin, mouseRay.direction * objectHit.distance, Color.blue);
+            Debug.Log("Right Did Hit an Location");
             // Assigns the clicked location so the Click_Movement script can access the location.
             playerClick.moveLocation = mouseRay.GetPoint(objectHit.distance);
             // Calls the unit movement function.
             playerClick.MoveUnits();
-
         }
         else
         {
