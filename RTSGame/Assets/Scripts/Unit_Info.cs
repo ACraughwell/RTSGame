@@ -24,6 +24,11 @@ public class Unit_Info : MonoBehaviour
     {
         playerClick = GameObject.Find("GameManager").GetComponent<Player_Click>();
         objectAgent = GetComponent<NavMeshAgent>();
+
+        if (gameObject.transform.position == targetLocation)
+        {
+            targetLocation = gameObject.transform.position;
+        }
     }
 
     // Update is called once per frame

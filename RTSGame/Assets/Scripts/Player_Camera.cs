@@ -7,11 +7,11 @@ public class Player_Camera : MonoBehaviour
     // Connects to the Click_Movement script so the movement functions can be called form this script.
     private Player_Click playerClick;
     // Layer mask set to only count the player's units that are assigned to layer 9.
-    public int leftLayerMask = 1 << 9;
+    public LayerMask leftLayerMask;
     // Layer mask set to only count the locations units can move to that are assigned to layer 10.
-    public int RightLayerMask = 1 << 10;
+    public LayerMask RightLayerMask;
     // 
-    public int EnemyLayerMask = 1 << 11;
+    public LayerMask EnemyLayerMask;
     // The main camera that acst as the player's eyes.
     public Camera mainCamera;
     // Ray that fires from the camera to the map when they click.
@@ -23,11 +23,31 @@ public class Player_Camera : MonoBehaviour
     //
     public float zoomChange = 100f;
 
+    // Fog of war.
+    private Ray fogofwarRay;
+    private RaycastHit fogofwarHit;
+
+    public GameObject fogofwarPlane;
+    public Vector3 playerUnitPosition;
+    public LayerMask fogofwarLayer;
+    public float unitRevealRadius;
+    private float radiusSquared;
+
+    public Mesh fogofwarMesh;
+    private Vector3[] fogofwarVectices;
+    private Color[] fogofwarColours;
+    private Vector3 currentVectice;
+    private float distanceToFogOfWarHit;
+
     // Start is called before the first frame update
     void Start()
     {
         // Assigns the connection variable to the specific script on the game object, so that this script does not lose the conenction.
         playerClick = GameObject.Find("GameManager").GetComponent<Player_Click>();
+
+        //
+        radiusSquared = unitRevealRadius * unitRevealRadius;
+        FogOfWarInitialize();
     }
 
     // Update is called once per frame
@@ -77,6 +97,30 @@ public class Player_Camera : MonoBehaviour
             RightArrowClick();
         }
 
+        // Fog of war raycast.
+        for (int i = 0; i < playerClick.playersObjects.Length; i++)
+        {
+            playerUnitPosition = playerClick.playersObjects[i].transform.position;
+
+            fogofwarRay = new Ray(transform.position, playerUnitPosition - transform.position);
+
+            if (Physics.Raycast(fogofwarRay, out fogofwarHit, 1000, fogofwarLayer))
+            {
+                // Draws a green line from the camera to the clicked location when a player obejct is hit.
+                Debug.DrawRay(fogofwarRay.origin, fogofwarRay.direction * fogofwarHit.distance, Color.green);
+
+                for (int j = 0; j < fogofwarVectices.Length; j++)
+                {
+                    currentVectice = fogofwarPlane.transform.TransformPoint(fogofwarVectices[j]);
+                    distanceToFogOfWarHit = Vector3.SqrMagnitude(currentVectice - fogofwarHit.point);
+                    if (distanceToFogOfWarHit < radiusSquared)
+                    {
+                        fogofwarColours[j].a = 0;
+                    }
+                }
+                UpdateFogOfWarColour();
+            }
+        }
     }
 
     // Checks to see if any player unit has been hit by the player left click.
@@ -174,5 +218,22 @@ public class Player_Camera : MonoBehaviour
     {
         Debug.Log("Right Click");
         mainCamera.transform.Translate(Vector3.right * 10 * Time.deltaTime);
+    }
+
+    void FogOfWarInitialize()
+    {
+        fogofwarMesh = fogofwarPlane.GetComponent<MeshFilter>().mesh;
+        fogofwarVectices = fogofwarMesh.vertices;
+        fogofwarColours = new Color[fogofwarVectices.Length];
+        for (int i = 0; i < fogofwarColours.Length; i++)
+        {
+            fogofwarColours[i] = Color.grey;
+        }
+        UpdateFogOfWarColour();
+    }
+
+    void UpdateFogOfWarColour()
+    {
+        fogofwarMesh.colors = fogofwarColours;
     }
 }
