@@ -10,11 +10,13 @@ public class Unit_Info : MonoBehaviour
     public bool objectSelected;
     public Vector3 moveLocation;
     public NavMeshAgent objectAgent;
+    public bool unitMoving;
     public int unitSpeed;
     public int unitHealth;
     public int unitDamage;
     public GameObject unitTarget;
     public Vector3 targetLocation;
+    public GameObject unitEnemy;
     // Layer mask set to only count the enemy objects that are assigned to layer 11.
     public int EnemyLayerMask = 11;
 
@@ -44,11 +46,12 @@ public class Unit_Info : MonoBehaviour
     {
         if (unitTarget != null)
         {
-        targetLocation = unitTarget.transform.position;
+            targetLocation = unitTarget.transform.position;
         }
 
         Debug.Log("Unit " + gameObject + " Moving");
         objectAgent.destination = moveLocation;
+        unitMoving = true;
     }
 
     public void OnTriggerEnter(Collider other)
@@ -59,10 +62,15 @@ public class Unit_Info : MonoBehaviour
         {
             Debug.Log("Enemy Seen " + other.gameObject);
 
-            if (unitTarget == null)
+            if (unitEnemy == null)
             {
                 Debug.Log("Target Locked " + other.gameObject);
-                unitTarget = other.gameObject;
+                unitEnemy = other.gameObject;
+            }
+
+            if (other.gameObject == unitTarget)
+            {
+                targetLocation = gameObject.transform.position;
             }
         }
     }
@@ -76,6 +84,10 @@ public class Unit_Info : MonoBehaviour
             // Check if unit can still see target, if not stop moving.
 
             playerClick.MoveToEnemy();
+        }
+        else
+        {
+            targetLocation = gameObject.transform.position;
         }
     }
 

@@ -9,10 +9,11 @@ public class Player_Click : MonoBehaviour
     public GameObject[] playersObjects;
     public GameObject[] movingObjects;
     public GameObject clickedObject;
-    public bool objectSelected;
     public Transform startLocation;
     public Vector3 moveLocation;
     public GameObject chosenEnemy;
+    public Material unitMaterial;
+    public Material selectedMaterial;
 
     // Start is called before the first frame update
     void Start()
@@ -30,22 +31,13 @@ public class Player_Click : MonoBehaviour
     {
         unitInfo = clickedObject.GetComponent<Unit_Info>();
 
-        objectSelected = false;
-
-        for (int i = 0; i < movingObjects.Length; i++)
-        {
-            if (movingObjects[i] == clickedObject)
-            {
-                objectSelected = true;
-            }
-        }
-
-        if (objectSelected == true)
+        if (unitInfo.objectSelected == true)
         {
             for (int i = 0; i < movingObjects.Length; i++)
             {
                 if (movingObjects[i] == clickedObject)
                 {
+                    movingObjects[i].GetComponent<Renderer>().material = unitMaterial;
                     movingObjects[i] = null;
                     unitInfo.objectSelected = false;
                     Debug.Log("Object Unselected " + clickedObject);
@@ -61,6 +53,7 @@ public class Player_Click : MonoBehaviour
                 {
                     movingObjects[i] = clickedObject;
                     unitInfo.objectSelected = true;
+                    movingObjects[i].GetComponent<Renderer>().material = selectedMaterial;
                     Debug.Log("Object Selected " + clickedObject);
                     return;
                 }
@@ -91,10 +84,20 @@ public class Player_Click : MonoBehaviour
         {
             if (movingObjects[i] != null)
             {
-                unitInfo = movingObjects[i].GetComponent<Unit_Info>();
-                unitInfo.unitTarget = chosenEnemy;
-                unitInfo.moveLocation = unitInfo.unitTarget.transform.position;
-                unitInfo.UnitMovement();
+                if (chosenEnemy == null)
+                {
+                    unitInfo = movingObjects[i].GetComponent<Unit_Info>();
+                    unitInfo.unitEnemy = unitInfo.unitTarget;
+                    unitInfo.moveLocation = unitInfo.unitTarget.transform.position;
+                    unitInfo.UnitMovement();
+                }
+                else
+                {
+                    unitInfo = movingObjects[i].GetComponent<Unit_Info>();
+                    unitInfo.unitTarget = chosenEnemy;
+                    unitInfo.moveLocation = unitInfo.unitTarget.transform.position;
+                    unitInfo.UnitMovement();
+                }
             }
         }
     }
