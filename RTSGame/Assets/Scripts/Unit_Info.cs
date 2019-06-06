@@ -11,14 +11,16 @@ public class Unit_Info : MonoBehaviour
     public Vector3 moveLocation;
     public NavMeshAgent objectAgent;
     public bool unitMoving;
+    public float unitRange;
     public int unitSpeed;
     public int unitHealth;
     public int unitDamage;
     public GameObject unitTarget;
     public Vector3 targetLocation;
     public GameObject unitEnemy;
+    public float enemyDistance;
     // Layer mask set to only count the enemy objects that are assigned to layer 11.
-    public int EnemyLayerMask = 11;
+    public int enemyLayerMask = 11;
 
 
     // Start is called before the first frame update
@@ -30,6 +32,7 @@ public class Unit_Info : MonoBehaviour
         if (gameObject.transform.position == targetLocation)
         {
             targetLocation = gameObject.transform.position;
+            unitMoving = false;
         }
     }
 
@@ -39,6 +42,17 @@ public class Unit_Info : MonoBehaviour
         if (unitTarget != null)
         {
             EnemySightCheck();
+        }
+
+        if (unitEnemy != null)
+        {
+            enemyDistance = Vector3.Distance(unitEnemy.transform.position, transform.position);
+
+            if (enemyDistance > unitRange)
+            {
+                Debug.Log("Target Lost " + unitEnemy.gameObject);
+                unitEnemy = null;
+            }
         }
     }
 
@@ -58,7 +72,7 @@ public class Unit_Info : MonoBehaviour
     {
         //Debug.Log("Triggered");
 
-        if (other.gameObject.layer == EnemyLayerMask)
+        if (other.gameObject.layer == enemyLayerMask)
         {
             Debug.Log("Enemy Seen " + other.gameObject);
 
